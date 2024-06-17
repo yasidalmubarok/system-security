@@ -8,7 +8,6 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"html/template"
 	"io"
 	"log"
@@ -16,15 +15,16 @@ import (
 	"os"
 
 	_ "github.com/lib/pq"
+	"github.com/vercel/go-bridge/go/bridge"
 )
 
-// Fungsi untuk menghasilkan kunci enkripsi dari password
+// Function to derive encryption key from password
 func deriveKey(password string) []byte {
 	hash := sha256.Sum256([]byte(password))
 	return hash[:]
 }
 
-// Fungsi untuk mengenkripsi data
+// Function to encrypt data
 func encrypt(data, passphrase string) (string, error) {
 	block, _ := aes.NewCipher(deriveKey(passphrase))
 	gcm, err := cipher.NewGCM(block)
@@ -39,7 +39,7 @@ func encrypt(data, passphrase string) (string, error) {
 	return base64.URLEncoding.EncodeToString(ciphertext), nil
 }
 
-// Fungsi untuk mendekripsi data
+// Function to decrypt data
 func decrypt(encryptedData, passphrase string) (string, error) {
 	data, err := base64.URLEncoding.DecodeString(encryptedData)
 	if err != nil {
@@ -64,7 +64,7 @@ type App struct {
 }
 
 func (app *App) homeHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl, _ := template.ParseFiles("index.html")
+	tmpl, _ := template.ParseFiles("public/index.html")
 	tmpl.Execute(w, nil)
 }
 
@@ -136,6 +136,5 @@ func main() {
 	http.HandleFunc("/add", app.addDataHandler)
 	http.HandleFunc("/data", app.getDataHandler)
 
-	fmt.Println("Server running on port 8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	bridge.Start(http.DefaultServeMux)
 }
