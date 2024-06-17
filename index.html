@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Secure Data</title>
+</head>
+<body>
+    <h1>Tambah Data</h1>
+    <form action="/add" method="post">
+        <label for="data">Data:</label>
+        <input type="text" id="data" name="data">
+        <input type="submit" value="Tambah">
+    </form>
+
+    <h1>Data Terenkripsi</h1>
+    <button onclick="fetchData()">Tampilkan Data</button>
+    <ul id="dataList"></ul>
+
+    <script>
+        function fetchData() {
+            fetch('/data')
+                .then(response => response.json())
+                .then(data => {
+                    const dataList = document.getElementById('dataList');
+                    dataList.innerHTML = '';
+                    data.forEach(item => {
+                        const li = document.createElement('li');
+                        li.textContent = item;
+                        dataList.appendChild(li);
+                    });
+                });
+        }
+    </script>
+</body>
+</html>
