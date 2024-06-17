@@ -13,6 +13,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 
 	_ "github.com/lib/pq"
 )
@@ -117,7 +118,7 @@ func (app *App) getDataHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	connStr := "user=yasid password=password dbname=securedb sslmode=disable"
+	connStr := os.Getenv("DATABASE_URL")
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal(err)
